@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminContext } from "@/lib/admin";
+import { getMediaReadUrl, r2Configured } from "@/lib/storage/r2";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET() {
@@ -9,7 +10,8 @@ export async function GET() {
     admin.sql`SELECT p.id,p.body,p.media_url,p.media_type,p.created_at,p.moderation_status,p.moderation_reason,u.username,u.display_name,u.email FROM public.posts p JOIN public.users u ON u.id=p.author_id WHERE p.moderation_status='pending_review' ORDER BY p.created_at ASC LIMIT 100`,
     admin.sql`SELECT r.id,r.post_id,r.reason,r.details,r.created_at,u.username,u.display_name,p.body FROM public.content_reports r JOIN public.users u ON u.id=r.reporter_id JOIN public.posts p ON p.id=r.post_id WHERE r.status='open' ORDER BY r.created_at ASC LIMIT 100`
   ]);
-  return NextResponse.json({posts,reports},{headers:{"Cache-Control":"no-store"}});
+  const postsWithMedia=await Promise.all(posts.map(async(p:any)=>({...p,media_url:p.media_url?(r2Configured()?await getMediaReadUrl(p.media_url).catch(()=>null):(/^https:\/\//i.test(p.media_url)?p.media_url:null)):null})));
+  return NextResponse.json({posts:postsWithMedia,reports},{headers:{"Cache-Control":"no-store"}});
 }
 export async function PATCH(request:Request) {
   const admin=await getAdminContext();
