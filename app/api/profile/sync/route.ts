@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const existing = await sql`SELECT id, username, display_name, age_band FROM public.users WHERE auth_user_id = ${session.user.id} LIMIT 1`;
     let ageBand: "13_15" | "16_17" | "18_plus" | null = existing[0]?.age_band || null;
     if (!ageBand) {
-      if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(dateOfBirth)) return reply({ error: "Confirm your date of birth to continue.", code: "AGE_REQUIRED" }, 428);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) return reply({ error: "Confirm your date of birth to continue.", code: "AGE_REQUIRED" }, 428);
       const dob = new Date(`${dateOfBirth}T00:00:00.000Z`);
       if (Number.isNaN(dob.getTime()) || dob.toISOString().slice(0, 10) !== dateOfBirth) return reply({ error: "Enter a valid date of birth." }, 400);
       const today = new Date();
