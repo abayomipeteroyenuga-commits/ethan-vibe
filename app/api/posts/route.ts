@@ -28,8 +28,8 @@ export async function POST(request:Request){
  const hit=blocked.find(([,pattern])=>pattern.test(text));
  if(hit)return NextResponse.json({error:"This post appears to contain prohibited content and cannot be published. Please follow the VIBE Community Guidelines.",category:hit[0]},{status:422});
  const sql=neon(process.env.DATABASE_URL);
- const members=await sql`SELECT id FROM public.users WHERE auth_user_id=${session.user.id} AND is_verified=true LIMIT 1`;
- if(!members[0])return NextResponse.json({error:"Finish setting up your VIBE profile before posting."},{status:403});
+ const members=await sql`SELECT id,age_band FROM public.users WHERE auth_user_id=${session.user.id} AND is_verified=true LIMIT 1`;
+ if(!members[0]||!members[0].age_band)return NextResponse.json({error:"Complete the 13+ age check before posting."},{status:403});
  // Hold every new post for human review until a dedicated AI moderation provider is configured.
  const rows=await sql`INSERT INTO public.posts(author_id,body,visibility,moderation_status,moderation_reason) VALUES(${members[0].id},${text},'public','pending_review','Awaiting moderator review') RETURNING id,created_at,moderation_status`;
  return NextResponse.json({post:rows[0],message:"Your post has been submitted for a quick community-safety review."},{status:201,headers:{"Cache-Control":"no-store"}});
