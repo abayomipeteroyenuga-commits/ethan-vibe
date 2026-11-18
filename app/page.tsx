@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import AuthActions from "@/app/components/auth-actions";
 import {
   Activity, Bell, Bookmark, BriefcaseBusiness, Camera, Check, ChevronDown,
@@ -22,6 +23,8 @@ const stories = [{name:"Your story",avatar:"＋",own:true},{name:"Tomi",avatar:"
 const nav = [{label:"Home",icon:Home},{label:"Explore",icon:Compass},{label:"Messages",icon:MessageCircle},{label:"Communities",icon:Users},{label:"Challenges",icon:Gamepad2},{label:"Creator Studio",icon:WandSparkles}];
 
 export default function HomePage() {
+ const router=useRouter();
+ const [ageCheckState,setAgeCheckState]=useState<"checking"|"ok"|"error">("checking");
  const [active,setActive] = useState("For you");
  const [liked,setLiked] = useState<Array<number|string>>([]);
  const [following,setFollowing] = useState<string[]>([]);
@@ -35,12 +38,15 @@ export default function HomePage() {
  const [showComposer,setShowComposer] = useState(false);
  const [mobileMenu,setMobileMenu] = useState(false);
  const [publishing,setPublishing] = useState(false);
+ useEffect(()=>{let live=true;fetch("/api/profile/age-status",{cache:"no-store"}).then(response=>{if(!live)return;if(response.status===428){router.replace("/age-check");return;}if(response.status===401||response.ok){setAgeCheckState("ok");return;}setAgeCheckState("error");}).catch(()=>{if(live)setAgeCheckState("error");});return()=>{live=false;};},[router]);
  useEffect(()=>{let live=true;fetch("/api/posts",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(data=>{if(live&&Array.isArray(data?.posts)&&data.posts.length){setPosts(data.posts.map((p:any)=>({id:p.id,name:p.name,handle:p.handle,avatar:p.avatar,time:new Date(p.created_at).toLocaleString(),text:p.text,tag:p.tag,likes:p.likes,comments:p.comments,image:p.media_url||"linear-gradient(135deg,#172b65,#7c3aed 58%,#22d3ee)",verified:p.verified})));}}).catch(()=>{});return()=>{live=false;};},[]);
  useEffect(()=>{let live=true;fetch("/api/ads",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(data=>{if(live&&Array.isArray(data?.ads)){const feedAds=data.ads.filter((a:SponsoredAd)=>a.placement==="feed"||a.placement==="all");setSponsoredAds(feedAds);feedAds.forEach((a:SponsoredAd)=>{fetch("/api/ads/events",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({campaign_id:a.id,event_type:"impression"})}).catch(()=>{});});}}).catch(()=>{});return()=>{live=false;};},[]);
 
  const filtered = useMemo(()=>posts.filter(p => (active==="For you" || active==="Following" || p.tag.toLowerCase()===active.toLowerCase()) && (p.text+" "+p.name+" "+p.tag).toLowerCase().includes(query.toLowerCase())),[posts,active,query]);
  const toggle = (arr:Array<number|string>,id:number|string,setter:(v:Array<number|string>)=>void) => setter(arr.includes(id)?arr.filter(x=>x!==id):[...arr,id]);
  async function publish(){ if(!composer.trim()||publishing) return; setPublishing(true); try { const response=await fetch("/api/posts",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({body:composer.trim()})}); const data=await response.json().catch(()=>({})); if(!response.ok) throw new Error(data.error||"We couldn't submit your post."); setComposer("");setShowComposer(false);setNotice(data.message||"Your post is awaiting moderator review."); } catch(error) { setNotice(error instanceof Error?error.message:"Post submission failed."); } finally { setPublishing(false); } }
+ if(ageCheckState==="checking")return <main style={{minHeight:"100vh",display:"grid",placeItems:"center",background:"#080d1b",color:"#dce7f7"}}>Checking VIBE age eligibility…</main>;
+ if(ageCheckState==="error")return <main style={{minHeight:"100vh",display:"grid",placeItems:"center",padding:24,background:"#080d1b",color:"#dce7f7"}}><section><h2>We couldn’t check your account yet.</h2><p>Please refresh and try again before continuing.</p><button onClick={()=>{setAgeCheckState("checking");fetch("/api/profile/age-status",{cache:"no-store"}).then(r=>{if(r.status===428){router.replace("/age-check");return;}setAgeCheckState(r.ok||r.status===401?"ok":"error");}).catch(()=>setAgeCheckState("error"));}}>Try again</button></section></main>;
  return <main className="app-shell">
   <header className="topbar">
    <a className="brand" href="#" aria-label="Ethan Vibe home"><span className="brand-mark">V</span><span>ETHAN <b>VIBE</b><small>CREATE · CONNECT · COMPETE · EARN</small></span></a>
