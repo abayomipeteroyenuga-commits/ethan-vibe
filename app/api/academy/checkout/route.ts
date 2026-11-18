@@ -19,6 +19,7 @@ export async function POST(request:Request){
  let item:any;
  if(productType==="course"){
   const courseId=typeof body.course_id==="string"?body.course_id:"";
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(courseId))return reply({error:"Choose a valid course."},400);
   const rows=await sql`SELECT id,slug,title,price_ngn::float8 AS price_ngn FROM public.academy_courses WHERE id=${courseId}::uuid AND is_active=true LIMIT 1`;
   item=rows[0];
  }else{
