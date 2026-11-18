@@ -43,7 +43,7 @@ export default function AuthScreen({ initialMode }: { initialMode: "signup" | "s
     if(!current.data?.user&&password){const signed=await authClient.signIn.email({email:email.trim().toLowerCase(),password});if(signed.error)throw new Error(signed.error.message||"Email verified. Please sign in.");}
     await finish();
    }else if(view==="forgot"){
-    const {error}=await otp.forgetPassword.emailOtp({email:email.trim().toLowerCase()});
+    const {error}=await otp.emailOtp.requestPasswordReset({email:email.trim().toLowerCase()});
     if(error)throw new Error(error.message||"We couldn't send a reset code.");
     change("reset");setMessage("A password reset code has been sent to your email.");
    }else if(view==="reset"){
