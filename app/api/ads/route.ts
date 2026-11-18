@@ -3,7 +3,6 @@ import { neon } from "@neondatabase/serverless";
 import { auth } from "@/lib/auth/server";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
-const safeCategories = ["education","technology","events","employment","entertainment"];
 export async function GET(){
  if(!process.env.DATABASE_URL)return NextResponse.json({ads:[]});
  const {data:session}=await auth.getSession();
