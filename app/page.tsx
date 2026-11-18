@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import AuthActions from "@/app/components/auth-actions";
 import {
   Activity, Bell, Bookmark, BriefcaseBusiness, Camera, Check, ChevronDown,
   Compass, Flame, Gamepad2, Hash, Heart, Home, ImagePlus, MessageCircle,
@@ -38,7 +39,7 @@ export default function HomePage() {
   <header className="topbar">
    <a className="brand" href="#" aria-label="Ethan Vibe home"><span className="brand-mark">V</span><span>ETHAN <b>VIBE</b><small>CREATE · CONNECT · COMPETE · EARN</small></span></a>
    <label className="searchbox"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search creators, communities, topics..." /></label>
-   <div className="top-actions"><button className="icon-btn" aria-label="Notifications" onClick={()=>setNotice("Notifications will appear here when your account is connected.")}><Bell/><i/></button><button className="avatar avatar-you" onClick={()=>setNotice("Your profile is part of the next account setup phase.")}>YO</button><button className="mobile-toggle icon-btn" onClick={()=>setMobileMenu(!mobileMenu)}><MoreHorizontal/></button></div>
+   <div className="top-actions"><button className="icon-btn" aria-label="Notifications" onClick={()=>setNotice("Notifications will appear here when your account is connected.")}><Bell/><i/></button><AuthActions /><button className="mobile-toggle icon-btn" onClick={()=>setMobileMenu(!mobileMenu)}><MoreHorizontal/></button></div>
   </header>
   <div className="layout">
    <aside className={mobileMenu?"left-sidebar mobile-open":"left-sidebar"}>
