@@ -12,7 +12,8 @@ export default function AuthScreen({ initialMode }: { initialMode: "signup" | "s
  const [busy,setBusy]=useState(false); const [error,setError]=useState(""); const [message,setMessage]=useState("");
  function change(next:View){setView(next);setError("");setMessage("");}
  async function finish(){
-  const response=await fetch("/api/profile/sync",{method:"POST",credentials:"same-origin"});
+  const response=await fetch("/api/profile/sync",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({dateOfBirth})});
+  if(response.status===428){router.replace("/age-check");router.refresh();return;}
   if(!response.ok){const data=await response.json().catch(()=>({}));throw new Error(data.error||"Your sign-in worked, but profile setup could not finish. Try again.");}
   router.replace("/account");router.refresh();
  }
