@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AuthActions from "@/app/components/auth-actions";
 import {
   Activity, Bell, Bookmark, BriefcaseBusiness, Camera, Check, ChevronDown,
@@ -9,7 +9,7 @@ import {
   Sparkles, TrendingUp, Users, Video, WandSparkles, X
 } from "lucide-react";
 
-type Post = { id:number; name:string; handle:string; avatar:string; time:string; text:string; tag:string; likes:number; comments:number; image:string; verified?:boolean; };
+type Post = { id:number|string; name:string; handle:string; avatar:string; time:string; text:string; tag:string; likes:number; comments:number; image:string; verified?:boolean; };
 const initialPosts: Post[] = [
  {id:1,name:"Tomi Adebayo",handle:"tomi.creates",avatar:"TA",time:"12 min ago",text:"Your next opportunity might come from the community you build today. Keep creating, keep showing up. 🚀",tag:"Creators",likes:248,comments:32,image:"linear-gradient(135deg,#172b65,#7c3aed 58%,#f0abfc)",verified:true},
  {id:2,name:"Ethan Digital Academy",handle:"ethandigital",avatar:"ED",time:"38 min ago",text:"CREATOR SPOTLIGHT ✨ This week we're celebrating people learning new skills, sharing what they build and helping others grow. Tag a creator who inspires you.",tag:"Community",likes:186,comments:21,image:"linear-gradient(135deg,#0e7490,#0f172a 70%,#22c55e)",verified:true},
@@ -22,9 +22,9 @@ const nav = [{label:"Home",icon:Home},{label:"Explore",icon:Compass},{label:"Mes
 
 export default function HomePage() {
  const [active,setActive] = useState("For you");
- const [liked,setLiked] = useState<number[]>([]);
+ const [liked,setLiked] = useState<Array<number|string>>([]);
  const [following,setFollowing] = useState<string[]>([]);
- const [saved,setSaved] = useState<number[]>([]);
+ const [saved,setSaved] = useState<Array<number|string>>([]);
  const [query,setQuery] = useState("");
  const [composer,setComposer] = useState("");
  const [posts,setPosts] = useState(initialPosts);
@@ -33,8 +33,9 @@ export default function HomePage() {
  const [showComposer,setShowComposer] = useState(false);
  const [mobileMenu,setMobileMenu] = useState(false);
  const [publishing,setPublishing] = useState(false);
+ useEffect(()=>{let live=true;fetch("/api/posts",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(data=>{if(live&&Array.isArray(data?.posts)&&data.posts.length){setPosts(data.posts.map((p:any)=>({id:p.id,name:p.name,handle:p.handle,avatar:p.avatar,time:new Date(p.created_at).toLocaleString(),text:p.text,tag:p.tag,likes:p.likes,comments:p.comments,image:p.media_url||"linear-gradient(135deg,#172b65,#7c3aed 58%,#22d3ee)",verified:p.verified})));}}).catch(()=>{});return()=>{live=false;};},[]);
  const filtered = useMemo(()=>posts.filter(p => (active==="For you" || active==="Following" || p.tag.toLowerCase()===active.toLowerCase()) && (p.text+" "+p.name+" "+p.tag).toLowerCase().includes(query.toLowerCase())),[posts,active,query]);
- const toggle = (arr:number[],id:number,setter:(v:number[])=>void) => setter(arr.includes(id)?arr.filter(x=>x!==id):[...arr,id]);
+ const toggle = (arr:Array<number|string>,id:number|string,setter:(v:Array<number|string>)=>void) => setter(arr.includes(id)?arr.filter(x=>x!==id):[...arr,id]);
  async function publish(){ if(!composer.trim()||publishing) return; setPublishing(true); try { const response=await fetch("/api/posts",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({body:composer.trim()})}); const data=await response.json().catch(()=>({})); if(!response.ok) throw new Error(data.error||"We couldn't submit your post."); setComposer("");setShowComposer(false);setNotice(data.message||"Your post is awaiting moderator review."); } catch(error) { setNotice(error instanceof Error?error.message:"Post submission failed."); } finally { setPublishing(false); } }
  return <main className="app-shell">
   <header className="topbar">
