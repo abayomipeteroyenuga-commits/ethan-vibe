@@ -13,7 +13,10 @@ const blocked: Array<[string,RegExp]> = [
 export async function GET(){
  if(!process.env.DATABASE_URL)return NextResponse.json({posts:[]});
  const sql=neon(process.env.DATABASE_URL);
- const rows=await sql`SELECT p.id::text AS id,u.display_name AS name,u.username AS handle,upper(left(u.display_name,2)) AS avatar,p.created_at,p.body AS text,'Community' AS tag,p.media_url,p.media_type,u.is_verified AS verified,(SELECT count(*)::int FROM public.post_likes l WHERE l.post_id=p.id) AS likes,(SELECT count(*)::int FROM public.comments c WHERE c.post_id=p.id) AS comments FROM public.posts p JOIN public.users u ON u.id=p.author_id WHERE p.visibility='public' AND p.moderation_status='approved' ORDER BY p.created_at DESC LIMIT 60`;
+ const {data:session}=await auth.getSession();
+ const members=session?.user?.emailVerified?await sql`SELECT id FROM public.users WHERE auth_user_id=${session.user.id} AND is_verified=true LIMIT 1`:[];
+ const viewerId=members[0]?.id||null;
+ const rows=await sql`SELECT p.id::text AS id,p.author_id::text AS author_id,u.display_name AS name,u.username AS handle,upper(left(u.display_name,2)) AS avatar,p.created_at,p.body AS text,'Community' AS tag,p.media_url,p.media_type,u.is_verified AS verified,(SELECT count(*)::int FROM public.post_likes l WHERE l.post_id=p.id) AS likes,(SELECT count(*)::int FROM public.comments c WHERE c.post_id=p.id) AS comments FROM public.posts p JOIN public.users u ON u.id=p.author_id WHERE p.visibility='public' AND p.moderation_status='approved' AND NOT EXISTS (SELECT 1 FROM public.user_blocks b WHERE (b.blocker_id=${viewerId} AND b.blocked_id=p.author_id) OR (b.blocker_id=p.author_id AND b.blocked_id=${viewerId})) ORDER BY p.created_at DESC LIMIT 60`;
  return NextResponse.json({posts:rows},{headers:{"Cache-Control":"no-store"}});
 }
 export async function POST(request:Request){
