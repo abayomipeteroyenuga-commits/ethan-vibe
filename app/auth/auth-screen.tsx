@@ -8,7 +8,7 @@ const otp = authClient as any;
 type View = "signup" | "signin" | "verify" | "forgot" | "reset";
 export default function AuthScreen({ initialMode }: { initialMode: "signup" | "signin" }) {
  const router=useRouter(); const [view,setView]=useState<View>(initialMode);
- const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const [code,setCode]=useState("");
+ const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const [code,setCode]=useState(""); const [dateOfBirth,setDateOfBirth]=useState("");
  const [busy,setBusy]=useState(false); const [error,setError]=useState(""); const [message,setMessage]=useState("");
  function change(next:View){setView(next);setError("");setMessage("");}
  async function finish(){
@@ -66,7 +66,7 @@ export default function AuthScreen({ initialMode }: { initialMode: "signup" | "s
    <section className="auth-card"><h2>{title}</h2><p className="auth-subtitle">{sub}</p>
     {error&&<div className="auth-error" role="alert">{error}</div>}{message&&<div className="auth-success" role="status">{message}</div>}
     <form className="auth-form" onSubmit={submit}>
-     {view==="signup"&&<div className="auth-field"><label htmlFor="vibe-name">Your name</label><input id="vibe-name" value={name} onChange={e=>setName(e.target.value)} autoComplete="name" placeholder="What should we call you?" required maxLength={80}/></div>}
+     {view==="signup"&&<><div className="auth-field"><label htmlFor="vibe-name">Your name</label><input id="vibe-name" value={name} onChange={e=>setName(e.target.value)} autoComplete="name" placeholder="What should we call you?" required maxLength={80}/></div><div className="auth-field"><label htmlFor="vibe-dob">Date of birth</label><input id="vibe-dob" type="date" value={dateOfBirth} onChange={e=>setDateOfBirth(e.target.value)} max={new Date(Date.now()-13*365.2425*24*60*60*1000).toISOString().slice(0,10)} required/><small style={{display:"block",marginTop:6,color:"#9fb0c9"}}>ETHAN VIBE is for people aged 13 and above. We use this to assign age-appropriate safety settings.</small></div></>}
      {["signup","signin","forgot"].includes(view)&&<div className="auth-field"><label htmlFor="vibe-email">Email address</label><input id="vibe-email" type="email" value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" placeholder="you@example.com" required maxLength={254}/></div>}
      {["signup","signin","reset"].includes(view)&&<div className="auth-field"><label htmlFor="vibe-password">{view==="reset"?"New password":"Password"}</label><input id="vibe-password" type="password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete={view==="signin"?"current-password":"new-password"} placeholder="At least 8 characters" required minLength={8}/></div>}
      {["verify","reset"].includes(view)&&<div className="auth-field"><label htmlFor="vibe-code">{view==="verify"?"Email verification code":"Password reset code"}</label><input id="vibe-code" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,"").slice(0,6))} placeholder="000000" required maxLength={6}/></div>}
@@ -74,7 +74,7 @@ export default function AuthScreen({ initialMode }: { initialMode: "signup" | "s
     </form>
     {view==="verify"&&<div className="auth-switch"><span>Didn't get the code?</span><button type="button" disabled={busy} onClick={resend}>Resend code</button></div>}
     {view==="signin"&&<div className="auth-switch"><button type="button" onClick={()=>change("forgot")}>Forgot password?</button></div>}
-    {view==="signup"&&<p className="auth-terms">Create respectfully, keep your community positive and follow the VIBE guidelines.</p>}
+    {view==="signup"&&<p className="auth-terms">By creating an account, you confirm that you are at least 13. Under-13 accounts are not permitted. Teen accounts receive additional privacy and advertising protections.</p>}
     <div className="auth-switch">{view==="signup"?<><span>Already part of VIBE?</span><button type="button" onClick={()=>change("signin")}>Sign in</button></>:view==="signin"?<><span>New around here?</span><button type="button" onClick={()=>change("signup")}>Create an account</button></>:<button type="button" onClick={()=>change("signin")}>Back to sign in</button>}</div>
     <button className="auth-back" type="button" onClick={()=>router.push("/")}>← Back to VIBE</button>
    </section>
