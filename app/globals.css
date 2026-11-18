@@ -43,3 +43,14 @@
 @media(max-width:900px){.auth-layout{grid-template-columns:1fr;max-width:520px;margin-top:38px}.auth-visual{display:none}}
 @media(max-width:620px){.auth-actions a{padding:9px 10px;font-size:10px}.auth-page{padding:18px 16px 36px}.auth-layout{margin-top:28px}.auth-card{border-radius:19px;padding:22px}}
 @media(prefers-reduced-motion:reduce){.app-shell:before{animation:none}}
+
+/* Youth-forward VIBE atmosphere and clearer account entry */
+.auth-join{font-weight:900;letter-spacing:.1px}
+.auth-loading{display:block;width:94px;height:34px;border-radius:10px;background:linear-gradient(100deg,#17243a 20%,#263a56 45%,#17243a 70%);background-size:220% 100%;animation:auth-shimmer 1.4s ease infinite}
+@keyframes auth-shimmer{to{background-position-x:-220%}}
+.app-shell{background:radial-gradient(ellipse at 7% 12%,#22e6d329,transparent 30%),radial-gradient(ellipse at 94% 8%,#ff5cae26,transparent 26%),radial-gradient(ellipse at 54% 88%,#9064ff24,transparent 34%),linear-gradient(145deg,#070b18 0%,#0b1022 48%,#101025 100%)}
+.app-shell:before{opacity:.9;background:radial-gradient(circle at 12% 24%,#24f0d83b,transparent 18%),radial-gradient(circle at 86% 17%,#ff5bbd38,transparent 19%),radial-gradient(circle at 66% 78%,#8c70ff38,transparent 24%),radial-gradient(circle at 30% 88%,#ffb45b20,transparent 18%);filter:blur(34px);animation:vibe-drift 16s ease-in-out infinite alternate}
+.welcome-row h1 span{background:linear-gradient(90deg,#5ce9df 0%,#a99aff 48%,#ff89bf 82%,#ffd27b 100%);background-clip:text;color:transparent}
+.primary-btn,.auth-primary,.auth-join,.account-cta{transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.primary-btn:hover,.auth-primary:hover,.auth-join:hover,.account-cta:hover{filter:saturate(1.16) brightness(1.06);box-shadow:0 10px 32px #8a78ff30}
+@media(prefers-reduced-motion:reduce){.auth-loading{animation:none}}
