@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthActions from "@/app/components/auth-actions";
 import {
-  Activity, Bell, Bookmark, BriefcaseBusiness, Camera, Check, ChevronDown,
+  Activity, Bell, Bookmark, BriefcaseBusiness, Camera, Check, ChevronDown, GraduationCap,
   Compass, Flame, Gamepad2, Hash, Heart, Home, ImagePlus, MessageCircle,
   MoreHorizontal, Plus, Search, Send, Settings2, Share2, ShieldCheck,
   Sparkles, TrendingUp, Users, Video, WandSparkles, X
@@ -93,6 +93,7 @@ export default function HomePage() {
    </section>
    <aside className="right-sidebar">
     <div className="right-card challenge-card"><div className="card-kicker"><Flame size={15}/> THIS WEEK ON VIBE</div><div className="challenge-title">Show us what<br/>you <span>can create.</span></div><p>#EthanCreatorWeek is live. Share a skill, a project or a story that inspires someone.</p><div className="challenge-meta"><span><Users size={15}/> Community challenge</span><span>Weekly</span></div><button className="primary-btn full-btn" onClick={openChallengeEntry}>Join the challenge <span>→</span></button></div>
+    <div className="right-card academy-promo"><div className="right-heading"><b><GraduationCap size={17}/> Learn with Ethan</b><span className="academy-promo-tag">ACADEMY</span></div><p>Turn your ideas into practical digital skills with Ethan Digital Academy.</p><a href="/academy" className="primary-btn full-btn" style={{display:"block",textAlign:"center",textDecoration:"none"}}>Explore classes & enrol →</a></div>
     <div className="right-card"><div className="right-heading"><b><TrendingUp size={17}/> Trending now</b><button onClick={()=>setActive("For you")}>See all</button></div>{trends.map((t,i)=><button className="trend-row" key={t} onClick={()=>{setQuery(t.replace("#",""));setActive("For you");}}><span>0{i+1} · TRENDING</span><b>{t}</b><small>{[1240,892,674,438][i].toLocaleString()} posts</small></button>)}</div>
     <div className="right-card"><div className="right-heading"><b><Users size={17}/> People to follow</b><button onClick={()=>setNotice("More creator recommendations are coming soon.")}>More</button></div>{people.map(p=><div className="person-row" key={p.handle}><div className="avatar">{p.avatar}</div><div className="person-info"><b>{p.name}</b><small>{p.field}</small></div><button className={following.includes(p.handle)?"follow-btn following":"follow-btn"} onClick={()=>setFollowing(following.includes(p.handle)?following.filter(x=>x!==p.handle):[...following,p.handle])}>{following.includes(p.handle)?<Check size={15}/>:<Plus size={15}/>} {following.includes(p.handle)?"Following":"Follow"}</button></div>)}</div>
     <div className="vibe-footer"><span>ETHAN VIBE</span><p>About · <a href="/settings/safety" style={{color:"#6ce4db",textDecoration:"none"}}>Safety & Privacy</a> · Community Guidelines · Help · <a href="/advertise" style={{color:"#6ce4db",textDecoration:"none"}}>Advertise</a></p><small>© 2026 Ethan Digital. Create. Connect. Compete. Earn.</small></div>
