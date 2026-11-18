@@ -13,9 +13,10 @@ export async function POST(request:Request){
  const productType=body?.product_type==="course"?"course":body?.product_type==="membership"?"membership":null;
  if(!productType)return reply({error:"Choose a valid course or membership."},400);
  const sql=neon(process.env.DATABASE_URL);
- const members=await sql`SELECT id,email FROM public.users WHERE auth_user_id=${session.user.id} AND is_verified=true LIMIT 1`;
+ const members=await sql`SELECT id,email,age_band FROM public.users WHERE auth_user_id=${session.user.id} AND is_verified=true LIMIT 1`;
  const member=members[0];
  if(!member)return reply({error:"Complete your VIBE profile before checkout."},403);
+ if(member.age_band!=="18_plus")return reply({error:"For safety, online checkout is currently available to adult account holders only. A parent or guardian can contact Ethan Digital Academy to arrange a student enrolment."},403);
  let item:any;
  if(productType==="course"){
   const courseId=typeof body.course_id==="string"?body.course_id:"";
