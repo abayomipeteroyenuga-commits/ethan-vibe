@@ -32,9 +32,10 @@ export default function HomePage() {
  const [activeNav,setActiveNav] = useState("Home");
  const [showComposer,setShowComposer] = useState(false);
  const [mobileMenu,setMobileMenu] = useState(false);
+ const [publishing,setPublishing] = useState(false);
  const filtered = useMemo(()=>posts.filter(p => (active==="For you" || active==="Following" || p.tag.toLowerCase()===active.toLowerCase()) && (p.text+" "+p.name+" "+p.tag).toLowerCase().includes(query.toLowerCase())),[posts,active,query]);
  const toggle = (arr:number[],id:number,setter:(v:number[])=>void) => setter(arr.includes(id)?arr.filter(x=>x!==id):[...arr,id]);
- function publish(){ if(!composer.trim()) return; setPosts([{id:Date.now(),name:"You",handle:"you",avatar:"YO",time:"Just now",text:composer.trim(),tag:"Creators",likes:0,comments:0,image:"linear-gradient(135deg,#1e293b,#4338ca,#0e7490)"},...posts]);setComposer("");setShowComposer(false);setNotice("Your post has been added to this preview feed."); }
+ async function publish(){ if(!composer.trim()||publishing) return; setPublishing(true); try { const response=await fetch("/api/posts",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({body:composer.trim()})}); const data=await response.json().catch(()=>({})); if(!response.ok) throw new Error(data.error||"We couldn't submit your post."); setComposer("");setShowComposer(false);setNotice(data.message||"Your post is awaiting moderator review."); } catch(error) { setNotice(error instanceof Error?error.message:"Post submission failed."); } finally { setPublishing(false); } }
  return <main className="app-shell">
   <header className="topbar">
    <a className="brand" href="#" aria-label="Ethan Vibe home"><span className="brand-mark">V</span><span>ETHAN <b>VIBE</b><small>CREATE · CONNECT · COMPETE · EARN</small></span></a>
@@ -73,7 +74,7 @@ export default function HomePage() {
     <div className="vibe-footer"><span>ETHAN VIBE</span><p>About · Community Guidelines · Privacy · Help</p><small>© 2026 Ethan Digital. Create. Connect. Compete. Earn.</small></div>
    </aside>
   </div>
-  {showComposer&&<div className="modal-backdrop" onClick={()=>setShowComposer(false)}><div className="composer-modal" onClick={e=>e.stopPropagation()}><div className="modal-head"><b>Create a post</b><button onClick={()=>setShowComposer(false)}><X/></button></div><textarea value={composer} onChange={e=>setComposer(e.target.value)} placeholder="Share something with your community..." autoFocus/><div className="modal-tools"><span><ImagePlus size={17}/> Media upload coming soon</span><button className="primary-btn" onClick={publish} disabled={!composer.trim()}>Publish post <Send size={15}/></button></div></div></div>}
+  {showComposer&&<div className="modal-backdrop" onClick={()=>setShowComposer(false)}><div className="composer-modal" onClick={e=>e.stopPropagation()}><div className="modal-head"><b>Create a post</b><button onClick={()=>setShowComposer(false)}><X/></button></div><textarea value={composer} onChange={e=>setComposer(e.target.value)} placeholder="Share something with your community..." autoFocus/><div className="modal-tools"><span><ImagePlus size={17}/> Posts are reviewed before publishing</span><button className="primary-btn" onClick={publish} disabled={!composer.trim()||publishing}>{publishing?"Submitting…":"Submit for review"} <Send size={15}/></button></div></div></div>}
   <nav className="mobile-nav">{nav.slice(0,5).map(({label,icon:Icon})=><button key={label} className={activeNav===label?"mobile-active":""} onClick={()=>setActiveNav(label)}><Icon size={20}/><small>{label==="Communities"?"Groups":label}</small></button>)}</nav>
  </main>;
 }
