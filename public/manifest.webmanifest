@@ -1,0 +1,10 @@
+{
+  "name": "ETHAN VIBE",
+  "short_name": "VIBE",
+  "description": "Create. Connect. Compete. Earn.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080c18",
+  "theme_color": "#090d1c",
+  "icons": []
+}
