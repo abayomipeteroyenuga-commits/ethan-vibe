@@ -36,3 +36,15 @@ Never commit R2 credentials or expose them to browser-side code. The app allows 
 
 ## Repository status
 The R2 upload integration is implemented in the application code. It is not operational until the bucket, CORS policy, and Vercel environment variables above are configured and a successful production deployment is verified.
+
+
+## Academy, subscriptions and payments
+- The member storefront is available at `/academy`.
+- The initial Academy product is Professional Digital Skills Training at ₦50,000 per 30-day access period.
+- Optional VIBE Premium and Creator Plus passes are ₦2,000 and ₦5,000 per 30 days respectively.
+- Course and membership access is activated only after server-side Paystack verification or a valid signed Paystack webhook.
+- Configure the server-only `PAYSTACK_SECRET_KEY` in Vercel. Never expose it to browser code or commit it.
+- Configure the Paystack webhook URL as `https://vibe.ethandigitalacademy.org/api/payments/paystack/webhook`.
+- This first release uses prepaid 30-day access passes with manual renewal; it does not silently auto-charge members.
+- Apply `db/migrations/20261118_revenue_academy.sql` to the Neon `ethan_vibe` database before enabling checkout.
+- Admins can review verified revenue and recent transactions from `/admin`.
