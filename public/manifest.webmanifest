@@ -1,10 +1,17 @@
 {
+  "id": "/",
   "name": "ETHAN VIBE",
   "short_name": "VIBE",
-  "description": "Create. Connect. Compete. Earn.",
+  "description": "Your people. Your vibe. Meet, share, connect and discover with ETHAN VIBE.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#080c18",
   "theme_color": "#090d1c",
-  "icons": []
+  "categories": ["social", "education", "entertainment"],
+  "icons": [
+    { "src": "/icons/vibe-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/vibe-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
 }
