@@ -23,7 +23,7 @@ export default function PwaInstall() {
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onInstalled);
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); }, { once: true });
+      const register = () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); };\n      if (document.readyState === "complete") register(); else window.addEventListener("load", register, { once: true });
     }
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
