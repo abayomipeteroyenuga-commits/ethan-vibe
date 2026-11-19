@@ -22,7 +22,7 @@ export default function AuthActions() {
   if (!checked) return <div className="auth-actions" aria-label="Checking account"><span className="auth-loading" /></div>;
   if (user) {
     const label = (user.name || user.email || "V").slice(0, 2).toUpperCase();
-    return <div className="auth-actions"><Link className="auth-user" href="/account" aria-label="Open your VIBE account"><span className="avatar avatar-you">{label}</span><span>My account</span></Link></div>;
+    return <div className="auth-actions"><Link className="auth-user" href="/account" aria-label="Open your VIBE account"><span className="avatar avatar-you">{label}</span><span>My account</span></Link><Link className="auth-login" href="/creator-studio">Creator Studio</Link></div>;
   }
   return <div className="auth-actions"><Link className="auth-login" href="/auth?mode=signin">Log in</Link><Link className="auth-join" href="/auth?mode=signup">Create account</Link></div>;
 }
